@@ -19,6 +19,7 @@ import multiprocessing
 import platform
 import logging
 import http.client
+import qrcode_terminal
 from collections import defaultdict
 from urllib.parse import urlparse
 from lxml import html
@@ -167,9 +168,11 @@ class WebWeixin(object):
         if sys.platform.startswith('win'):
             self._showQRCodeImg('win')
         elif sys.platform.find('darwin') >= 0:
-            self._showQRCodeImg('macos')
+            # self._showQRCodeImg('macos')
+            qrcode_terminal.draw('https://login.weixin.qq.com/l/' + self.uuid)
         else:
-            self._str2qr('https://login.weixin.qq.com/l/' + self.uuid)
+            qrcode_terminal.draw('https://login.weixin.qq.com/l/' + self.uuid)
+            # self._str2qr('https://login.weixin.qq.com/l/' + self.uuid)
 
     def _showQRCodeImg(self, str):
         if self.commandLineQRCode:

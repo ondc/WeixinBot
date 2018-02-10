@@ -12,10 +12,23 @@
 
 发送内容格式（Text / Picture / Card / Map / Sharing）
 
+sudo pip3 install -r requirements.txt
+
+pip3 install pillow qrcode
+
+pip3 install qrcode-terminal
+
 基础入门_Python-模块和包.运维开发中watchdog事件监视的最佳实践
 
 用于安装check.py的依赖
 
 pip3 install --upgrade watchdog  
+
+
+https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxgetmedia?MsgID=2931110412134773908&skey=@crypt_fa59606_a0838edcb1b4081d57276877e7e7849a
+
+API_webwxdownloadmedia: 'https://' + o + '/cgi-bin/mmwebwx-bin/webwxgetmedia',
+
+API_webwxgetmedia: '/cgi-bin/mmwebwx-bin/webwxgetmedia',
 
 
