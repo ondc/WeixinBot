@@ -105,14 +105,15 @@ class WebWeixin(object):
         self.GroupMemeberList = []  # 群友
         self.PublicUsersList = []  # 公众号／服务号
         self.SpecialUsersList = []  # 特殊账号
-        self.autoReplyMode = False
+        self.autoReplyMode = True #False
         self.syncHost = ''
         self.user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36'
         self.interactive = False
         self.autoOpen = False
         self.saveFolder = os.path.join(os.getcwd(), 'saved')
         self.saveSubFolders = {'webwxgeticon': 'icons', 'webwxgetheadimg': 'headimgs', 'webwxgetmsgimg': 'msgimgs',
-                               'webwxgetvideo': 'videos', 'webwxgetvoice': 'voices', '_showQRCodeImg': 'qrcodes'}
+                               'webwxgetvideo': 'videos', 'webwxgetvoice': 'voices', '_showQRCodeImg': 'qrcodes',
+                               'webwxgetmedia':'media'}
         self.appid = 'wx782c26e4c19acffb'
         self.lang = 'zh_CN'
         self.lastCheckTs = time.time()
@@ -595,6 +596,27 @@ class WebWeixin(object):
                 f.close()
         return fn
 
+    def webwxgetmedia(self, msgid,msg):
+        
+        logging.debug(msg)
+        url = msg['raw_msg']['Url']
+        data = self._get(url)
+        logging.debug(1111)
+        # logging.debug(data)
+        # urllib2.urlopen(url)
+        # data=f.read()
+        logging.debug(222)
+        logging.debug(url)
+        # logging.debug(data)
+        if data == '':
+            return ''
+        data = bytes(data,encoding="utf8");
+        # fn = 'img_' + id + '.jpg'
+        fn = msg['raw_msg']['FileName']+".url";
+
+        return self._saveFile(fn, data, 'webwxgetmedia')
+
+
     def webwxgeticon(self, id):
         url = self.base_uri + \
             '/webwxgeticon?username=%s&skey=%s' % (id, self.skey)
@@ -700,6 +722,27 @@ class WebWeixin(object):
                 return member['UserName']
         return None
 
+    def _showMusic163(self, message):
+        msg = message
+        logging.debug(msg)
+        if msg['raw_msg']:
+            srcName = self.getUserRemarkName(msg['raw_msg']['FromUserName'])
+            dstName = self.getUserRemarkName(msg['raw_msg']['ToUserName'])
+            content = msg['raw_msg']['Content'].replace(
+                '&lt;', '<').replace('&gt;', '>')
+            message_id = msg['raw_msg']['MsgId']
+
+            filename = msg['raw_msg']['FileName']
+            logging.debug('IMAGE local filename: ' + filename)
+            self.webwxgetmedia(message_id,msg)
+            #webwxgetmedia(self, msg);
+            # fileStream = fs.createWriteStream(filename)
+
+            # fp = open(file_name,'wb')  
+            # fp.write(pic.content) #写入图片  
+            # fp.close()
+            
+
     def _showMsg(self, message):
 
         srcName = None
@@ -798,7 +841,7 @@ class WebWeixin(object):
                 #    store
 #自己加的代码-------------------------------------------#
                 if self.autoReplyMode:
-                    ans = self._xiaodoubi(content) + '\n[微信机器人自动回复]'
+                    ans = self._kugga(content) + '\n[微信机器人自动回复]'
                     if self.webwxsendmsg(ans, msg['FromUserName']):
                         print('自动回复: ' + ans)
                         logging.info('自动回复: ' + ans)
@@ -853,6 +896,8 @@ class WebWeixin(object):
                 }
                 raw_msg = {'raw_msg': msg, 'message': '%s 分享了一个%s: %s' % (
                     name, appMsgType[msg['AppMsgType']], json.dumps(card))}
+                if (msg['Url'].index("music.163.com")):
+                    self._showMusic163(raw_msg)
                 self._showMsg(raw_msg)
             elif msgType == 51:
                 raw_msg = {'raw_msg': msg, 'message': '[*] 成功获取联系人信息'}
@@ -886,12 +931,12 @@ class WebWeixin(object):
                 print('retcode: %s, selector: %s' % (retcode, selector))
             logging.debug('retcode: %s, selector: %s' % (retcode, selector))
             if retcode == '1100':
-                print('[*] 你在手机上登出了微信，债见')
-                logging.debug('[*] 你在手机上登出了微信，债见')
+                print('[*] 你在手机上登出了微信，再见')
+                logging.debug('[*] 你在手机上登出了微信，再见')
                 break
             if retcode == '1101':
-                print('[*] 你在其他地方登录了 WEB 版微信，债见')
-                logging.debug('[*] 你在其他地方登录了 WEB 版微信，债见')
+                print('[*] 你在其他地方登录了 WEB 版微信，再见')
+                logging.debug('[*] 你在其他地方登录了 WEB 版微信，再见')
                 break
             elif retcode == '0':
                 if selector == '2':
@@ -1172,6 +1217,14 @@ class WebWeixin(object):
             return ans['response']
         else:
             return '你在说什么，风太大听不清列'
+    
+    def _kugga(self, word):
+        url = 'http://www.xiaodoubi.com/bot/chat.php'
+        try:
+            r = requests.post(url, data={'chat': word})
+            return r.content
+        except:
+            return "让我一个人静静 T_T..."
 
     def _searchContent(self, key, content, fmat='attr'):
         if fmat == 'attr':

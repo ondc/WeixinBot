@@ -1,0 +1,52 @@
+/* chrome-extension://pkgccpejnmalmdinmhkkfafefagiiiad/template/fehelper_jsonformat.html */
+{
+    "raw_msg": {
+        "MsgId": "3609462597449226971",
+        "FromUserName": "@60e7fcc6eb2ba2de696fd1cdfb94cdf0",
+        "ToUserName": "@b2d975ac8876fc71b5f5349571f813f860c55f099de9f1754f44814f7c9626d3",
+        "MsgType": 49,
+        "Content": "&lt;msg&gt;&lt;appmsg appid=\"\" sdkver=\"0\"&gt;&lt;title&gt;说散就散（电影《前任3：再见前任》主题曲）&lt;/title&gt;&lt;des&gt;袁娅维&lt;/des&gt;&lt;action&gt;&lt;/action&gt;&lt;type&gt;5&lt;/type&gt;&lt;showtype&gt;0&lt;/showtype&gt;&lt;mediatagname&gt;&lt;/mediatagname&gt;&lt;content&gt;&lt;/content&gt;&lt;url&gt;http://music.163.com/m/song?id=523251118&lt;/url&gt;&lt;lowurl&gt;&lt;/lowurl&gt;&lt;dataurl&gt;&lt;/dataurl&gt;&lt;lowdataurl&gt;&lt;/lowdataurl&gt;&lt;appattach&gt;&lt;totallen&gt;0&lt;/totallen&gt;&lt;attachid&gt;&lt;/attachid&gt;&lt;emoticonmd5&gt;&lt;/emoticonmd5&gt;&lt;fileext&gt;&lt;/fileext&gt;&lt;cdnthumburl&gt;304e020100044730450201000204873d3cd602032f4f560204977ac2dc02045a7969f30420777869645f66646e69786263753834326d323236385f313531373930363431390204010400030201000400&lt;/cdnthumburl&gt;&lt;cdnthumbmd5&gt;bdf3dface4658432869dac5e510917b1&lt;/cdnthumbmd5&gt;&lt;cdnthumblength&gt;7457&lt;/cdnthumblength&gt;&lt;cdnthumbwidth&gt;160&lt;/cdnthumbwidth&gt;&lt;cdnthumbheight&gt;160&lt;/cdnthumbheight&gt;&lt;cdnthumbaeskey&gt;450098f9442045afbc349a3dd6d61c0a&lt;/cdnthumbaeskey&gt;&lt;aeskey&gt;450098f9442045afbc349a3dd6d61c0a&lt;/aeskey&gt;&lt;encryver&gt;0&lt;/encryver&gt;&lt;/appattach&gt;&lt;extinfo&gt;&lt;/extinfo&gt;&lt;sourceusername&gt;&lt;/sourceusername&gt;&lt;sourcedisplayname&gt;&lt;/sourcedisplayname&gt;&lt;commenturl&gt;&lt;/commenturl&gt;&lt;thumburl&gt;http://p1.music.126.net/e50cdn6BVUCFFHpN9RIidA==/109951163081271235.jpg?imageView&amp;amp;thumbnail=400x0&amp;amp;quality=75&amp;amp;tostatic=0&lt;/thumburl&gt;&lt;/appmsg&gt;&lt;fromusername&gt;&lt;/fromusername&gt;&lt;scene&gt;0&lt;/scene&gt;&lt;appinfo&gt;&lt;version&gt;1&lt;/version&gt;&lt;appname&gt;&lt;/appname&gt;&lt;/appinfo&gt;&lt;commenturl&gt;&lt;/commenturl&gt;&lt;/msg&gt;",
+        "Status": 3,
+        "ImgStatus": 2,
+        "CreateTime": 1517906420,
+        "VoiceLength": 0,
+        "PlayLength": 0,
+        "FileName": "说散就散（电影《前任3：再见前任》主题曲）",
+        "FileSize": "0",
+        "MediaId": "",
+        "Url": "http://music.163.com/m/song?id=523251118",
+        "AppMsgType": 5,
+        "StatusNotifyCode": 0,
+        "StatusNotifyUserName": "",
+        "RecommendInfo": {
+            "UserName": "",
+            "NickName": "",
+            "QQNum": 0,
+            "Province": "",
+            "City": "",
+            "Content": "",
+            "Signature": "",
+            "Alias": "",
+            "Scene": 0,
+            "VerifyFlag": 0,
+            "AttrStatus": 0,
+            "Sex": 0,
+            "Ticket": "",
+            "OpCode": 0
+        },
+        "ForwardFlag": 0,
+        "AppInfo": {
+            "AppID": "",
+            "Type": 0
+        },
+        "HasProductId": 0,
+        "Ticket": "",
+        "ImgHeight": 0,
+        "ImgWidth": 0,
+        "SubMsgType": 0,
+        "NewMsgId": 3609462597449227000,
+        "OriContent": "",
+        "EncryFileName": "%E8%AF%B4%E6%95%A3%E5%B0%B1%E6%95%A3%EF%BC%88%E7%94%B5%E5%BD%B1%E3%80%8A%E5%89%8D%E4%BB%BB3%EF%BC%9A%E5%86%8D%E8%A7%81%E5%89%8D%E4%BB%BB%E3%80%8B%E4%B8%BB%E9%A2%98%E6%9B%B2%EF%BC%89"
+    },
+    "message": "leofu 分享了一个链接: {\"title\": \"\\u8bf4\\u6563\\u5c31\\u6563\\uff08\\u7535\\u5f71\\u300a\\u524d\\u4efb3\\uff1a\\u518d\\u89c1\\u524d\\u4efb\\u300b\\u4e3b\\u9898\\u66f2\\uff09\", \"description\": \"\\u8881\\u5a05\\u7ef4\", \"url\": \"http://music.163.com/m/song?id=523251118\", \"appname\": \"\\u672a\\u77e5\"}"
+}

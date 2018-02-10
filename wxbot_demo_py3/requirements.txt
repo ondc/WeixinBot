@@ -8,3 +8,4 @@ six
 requests_toolbelt
 pyqrcode
 certifi
+Observer

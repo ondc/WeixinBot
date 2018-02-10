@@ -1,0 +1,52 @@
+/* chrome-extension://pkgccpejnmalmdinmhkkfafefagiiiad/template/fehelper_jsonformat.html */
+{
+    "raw_msg": {
+        "MsgId": "5385888242037840787",
+        "FromUserName": "@d738a4daf61c4ddcf9ca2a60078932ad",
+        "ToUserName": "@0bf5efb1ffccf9d708a78b2549a68e637bd442c9df0b027b5dc531a2d9899dcd",
+        "MsgType": 49,
+        "Content": "&lt;msg&gt;&lt;appmsg appid=\"wx8dd6ecd81906fd84\" sdkver=\"0\"&gt;&lt;title&gt;好久不见&lt;/title&gt;&lt;des&gt;陈奕迅&lt;/des&gt;&lt;action&gt;&lt;/action&gt;&lt;type&gt;3&lt;/type&gt;&lt;showtype&gt;0&lt;/showtype&gt;&lt;soundtype&gt;0&lt;/soundtype&gt;&lt;mediatagname&gt;&lt;/mediatagname&gt;&lt;messageext&gt;&lt;/messageext&gt;&lt;messageaction&gt;&lt;/messageaction&gt;&lt;content&gt;&lt;/content&gt;&lt;contentattr&gt;0&lt;/contentattr&gt;&lt;url&gt;http://music.163.com/song/65538?userid=533887496&lt;/url&gt;&lt;lowurl&gt;http://music.163.com/song/65538?userid=533887496&lt;/lowurl&gt;&lt;dataurl&gt;http://music.163.com/song/media/outer/url?id=65538&lt;/dataurl&gt;&lt;lowdataurl&gt;http://music.163.com/song/media/outer/url?id=65538&lt;/lowdataurl&gt;&lt;appattach&gt;&lt;totallen&gt;0&lt;/totallen&gt;&lt;attachid&gt;&lt;/attachid&gt;&lt;emoticonmd5&gt;&lt;/emoticonmd5&gt;&lt;fileext&gt;&lt;/fileext&gt;&lt;cdnthumburl&gt;304d02010004463044020100020458acd52002032f4f560204477ac2dc02045a7e36e5041f777869645f77343033383970733173656b3231315f313531383232313032390204010400030201000400&lt;/cdnthumburl&gt;&lt;cdnthumbmd5&gt;1eb900c8ec53ba181263b1982a285070&lt;/cdnthumbmd5&gt;&lt;cdnthumblength&gt;4701&lt;/cdnthumblength&gt;&lt;cdnthumbwidth&gt;135&lt;/cdnthumbwidth&gt;&lt;cdnthumbheight&gt;135&lt;/cdnthumbheight&gt;&lt;cdnthumbaeskey&gt;0c76456b7e30437daa93ec38c0c89993&lt;/cdnthumbaeskey&gt;&lt;aeskey&gt;0c76456b7e30437daa93ec38c0c89993&lt;/aeskey&gt;&lt;encryver&gt;0&lt;/encryver&gt;&lt;/appattach&gt;&lt;extinfo&gt;&lt;/extinfo&gt;&lt;sourceusername&gt;&lt;/sourceusername&gt;&lt;sourcedisplayname&gt;&lt;/sourcedisplayname&gt;&lt;thumburl&gt;&lt;/thumburl&gt;&lt;md5&gt;&lt;/md5&gt;&lt;statextstr&gt;GhQKEnd4OGRkNmVjZDgxOTA2ZmQ4NA==&lt;/statextstr&gt;&lt;/appmsg&gt;&lt;fromusername&gt;&lt;/fromusername&gt;&lt;scene&gt;0&lt;/scene&gt;&lt;appinfo&gt;&lt;version&gt;48&lt;/version&gt;&lt;appname&gt;网易云音乐&lt;/appname&gt;&lt;/appinfo&gt;&lt;commenturl&gt;&lt;/commenturl&gt;&lt;/msg&gt;",
+        "Status": 3,
+        "ImgStatus": 2,
+        "CreateTime": 1518252249,
+        "VoiceLength": 0,
+        "PlayLength": 0,
+        "FileName": "好久不见",
+        "FileSize": "0",
+        "MediaId": "",
+        "Url": "http://music.163.com/song/65538?userid=533887496",
+        "AppMsgType": 3,
+        "StatusNotifyCode": 0,
+        "StatusNotifyUserName": "",
+        "RecommendInfo": {
+            "UserName": "",
+            "NickName": "",
+            "QQNum": 0,
+            "Province": "",
+            "City": "",
+            "Content": "",
+            "Signature": "",
+            "Alias": "",
+            "Scene": 0,
+            "VerifyFlag": 0,
+            "AttrStatus": 0,
+            "Sex": 0,
+            "Ticket": "",
+            "OpCode": 0
+        },
+        "ForwardFlag": 0,
+        "AppInfo": {
+            "AppID": "wx8dd6ecd81906fd84",
+            "Type": 0
+        },
+        "HasProductId": 0,
+        "Ticket": "",
+        "ImgHeight": 0,
+        "ImgWidth": 0,
+        "SubMsgType": 0,
+        "NewMsgId": 5385888242037841000,
+        "OriContent": "",
+        "EncryFileName": "%E5%A5%BD%E4%B9%85%E4%B8%8D%E8%A7%81"
+    },
+    "message": "leofu 分享了一个音乐: {\"title\": \"\\u597d\\u4e45\\u4e0d\\u89c1\", \"description\": \"\\u9648\\u5955\\u8fc5\", \"url\": \"http://music.163.com/song/65538?userid=533887496\", \"appname\": \"\\u7f51\\u6613\\u4e91\\u97f3\\u4e50\"}"
+}
