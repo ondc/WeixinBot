@@ -20,6 +20,10 @@ import platform
 import logging
 import http.client
 import qrcode_terminal
+import pycurl
+
+from bs4 import BeautifulSoup
+
 from collections import defaultdict
 from urllib.parse import urlparse
 from lxml import html
@@ -598,6 +602,41 @@ class WebWeixin(object):
                 f.write(data)
                 f.close()
         return fn
+    def _curlPost(self,method,params):
+        logging.debug(method)
+        logging.debug(params)
+        url = 'localhost:8443/songs'
+        # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
+        data = json.dumps({"jsonrpc": "2.0", "method": "speak","params":{"foo":"hello ", "bar":"world"}, "id": 1})
+
+        curl = pycurl.Curl()
+        curl.setopt(pycurl.URL, url)
+        curl.setopt(pycurl.HTTPHEADER, ['Content-Type: application/json']);
+        curl.setopt(pycurl.POST, 1)
+        curl.setopt(pycurl.POSTFIELDS, data)
+        curl.perform()
+        curl.close()
+
+
+        # buffer = StringIO()
+        # try:
+        #     c = pycurl.Curl()
+        #     c.setopt(pycurl.URL, 'https://somedatabase.com/api')
+        #     c.setopt(pycurl.VERBOSE, 0)
+        #     c.setopt(pycurl.USERPWD, 'usern:passwd')
+        #     c.setopt(c.WRITEDATA, buffer)
+        #     c.perform()
+        #     c.close
+        # except pycurl.error, error:
+        #     errno, errstr = error
+        #     print  "Couldn't connect to database server!!  error: ", errno, " ", errstr
+        #     return
+
+        # vips = buffer.getvalue()
+        # json.loads(vips)
+        # ips = json.loads(vips)
+
+        return data;
 
     def webwxgetmedia(self, msgid,msg):
         
@@ -613,6 +652,39 @@ class WebWeixin(object):
         # logging.debug(data)
         if data == '':
             return ''
+
+        # self._curlPost(method,params);
+
+        #用BeautifulSoup解析数据  python3 必须传入参数二'html.parser' 得到一个对象，接下来获取对象的相关属性
+        # html=BeautifulSoup(html,'html.parser')
+
+        soup = BeautifulSoup(html)
+        # 另外，我们还可以用本地 HTML 文件来创建对象，例如
+         
+        # soup = BeautifulSoup(open('index.html'))
+
+        # var link = $('link [rel="alternate"]');
+        # var singer = $('.cnt p.des').eq(0);
+        # // console.log(singer);
+        # var album = $('.cnt p.des').eq(1);
+        # var musicJson = {
+        #     title : $('.cnt .tit em').text(),
+        #     singleid : singer.find('a').eq(0).attr('href').replace('/artist?id=',''),
+        #     singer : singer.find('span').text(),
+        #     singerurl : singer.find('a').attr('href'),
+        #     album : album.find('a').text(),
+        #     albumurl : album.find('a').attr('href'),
+        #     cover : $('.m-lycifo .cvrwrap .u-cover-6 img').attr('src'),
+        #     musicurl:link.attr('href').replace('https://music.163.com/m','')
+        # }
+
+        # soup.find_all("a", class_="sister")
+
+        songdata = {title:"",url:"",cover:"",singer:"",singerurl:"",album:""};
+        
+        self._curlPost('songs',songdata);
+        
+            
         data = bytes(data,encoding="utf8");
         # fn = 'img_' + id + '.jpg'
         fn = msg['raw_msg']['FileName']+".url";

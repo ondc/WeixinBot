@@ -18,6 +18,8 @@ pip3 install pillow qrcode
 
 pip3 install qrcode-terminal
 
+pip3 install beautifulsoup4
+
 基础入门_Python-模块和包.运维开发中watchdog事件监视的最佳实践
 
 用于安装check.py的依赖
@@ -31,4 +33,21 @@ API_webwxdownloadmedia: 'https://' + o + '/cgi-bin/mmwebwx-bin/webwxgetmedia',
 
 API_webwxgetmedia: '/cgi-bin/mmwebwx-bin/webwxgetmedia',
 
+pycurl
+------
+wget https://dl.bintray.com/pycurl/pycurl/pycurl-7.43.0.1.tar.gz
 
+python3 setup.py install
+
+
+test
+```
+
+$ python3
+
+>>> import pycurl
+>>> print(pycurl.version)
+
+PycURL/7.43.0.1 libcurl/7.54.0 SecureTransport zlib/1.2.8
+
+```
