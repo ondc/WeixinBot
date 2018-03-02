@@ -22,6 +22,8 @@ import http.client
 import qrcode_terminal
 import pycurl
 
+from io import *
+
 from bs4 import BeautifulSoup
 
 from collections import defaultdict
@@ -756,39 +758,64 @@ class WebWeixin(object):
             myContact = self.getNameById(contact_Id)
 
             # logging.debug("contact="+myContact)
-
+            print (myContact)
+            print (myContact[0])
+            print (myContact[0]['NickName'])
             userJson = {
-                "user_name" : myContact[0].NickName,
-                "icon" : myContact[0].HeadImgUrl,
+                "user_name" : myContact[0]['NickName'],
+                "icon" : myContact[0]['HeadImgUrl'],
                 "wechat_from" : dstName,
                 "wechat_id" : assistant_Id,
-                "contact_id" : myContact[0].UserName,
-                "province" : myContact[0].Province,
-                "city" : myContact[0].City,
+                "contact_id" : myContact[0]['UserName'],
+                "province" : myContact[0]['Province'],
+                "city" : myContact[0]['City'],
                 "Uuid": self.uuid,
                 "uin" : self.uin,
-                "remark" : myContact[0].RemarkName
+                "remark" : myContact[0]['RemarkName']
             };
 
-            print (myContact)
+            
             print ("Python 原始数据：", repr(userJson))
 
             print ("JSON 对象：",json.dumps(userJson))
 
-            self.curlPost("users","bind_user",userJson)
-        return
+            data = self.curlPost("users","bind_user",userJson)
+        return data
 
-    def _user_mlist(self):
+    def _user_mlist(self,message):
+        msg = message
+        logging.debug(msg)
+        if msg['raw_msg']:
+            message_id = msg['raw_msg']['MsgId']
+            contact_Id = msg['raw_msg']['FromUserName']
+            assistant_Id = msg['raw_msg']['ToUserName']
 
-        userJson = {"uid": '10001'};
+            # 'test' leofu
+            srcName = self.getUserRemarkName(contact_Id)
 
-        
-        print ("Python 原始数据：", repr(userJson))
+            # 'wxfdbox'
+            dstName = self.getUserRemarkName(assistant_Id)
+            
+            content = msg['raw_msg']['Content'].replace(
+                '&lt;', '<').replace('&gt;', '>')
+            
+            logging.debug("srcName="+srcName)
+            logging.debug("dstName="+dstName)
+            logging.debug("content="+content)
 
-        print ("JSON 对象：",json.dumps(userJson))
-        # get_mlist
-        _curlPost("users","get_mlisturl",userJson)
-        return    
+            myContact = self.getNameById(contact_Id)
+            
+            userJson = {"uid": myContact[0]['RemarkName']};
+
+            # print ("Python 原始数据：", repr(userJson))
+
+            # print ("JSON 对象：",json.dumps(userJson))
+            # get_mlist
+            ans = self.curlPost("users","get_mlisturl",userJson)
+            # print(ans)
+            # if self.webwxsendmsg(ans, msg['raw_msg']['FromUserName']):
+            #     logging.info('自动回复: ' + ans)
+            return  ans  
 
         # relogin_update
     def _relogin_update(self):
@@ -826,19 +853,27 @@ class WebWeixin(object):
         logging.debug(params)
         url = 'localhost:8443/'+api
         # params = {"foo":"hello ", "bar":"world"};
-        # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
         data = json.dumps({"jsonrpc": "2.0", "method": method,"params":params, "id": 1})
-
+        
+        body = BytesIO() #StringIO()
         curl = pycurl.Curl()
         curl.setopt(pycurl.URL, url)
+        curl.setopt(pycurl.WRITEFUNCTION, body.write)
         curl.setopt(pycurl.HTTPHEADER, ['Content-Type: application/json']);
         curl.setopt(pycurl.POST, 1)
         curl.setopt(pycurl.POSTFIELDS, data)
         curl.perform()
+        html = body.getvalue()
+        print ("HTTP-code:", curl.getinfo(curl.HTTP_CODE))
+        body.close()
         curl.close()
-
-        return data;
-
+        temp = None
+        if html==None:
+            print('yes')
+        else:
+            temp=html.decode()
+            print(temp)
+        return temp;
 
     def webwxgeticon(self, id):
         url = self.base_uri + \
@@ -1558,6 +1593,12 @@ class WebWeixin(object):
         if word == '绑定':
             self._userbind(msg)
             return "绑定成功"
+        elif word == '列表':
+            data = self._user_mlist(msg)
+            return data;
+        elif word!="":
+            return  "让我一个人静静 T_T..."
+            
         # except:
             # return "让我一个人静静 T_T..."
 

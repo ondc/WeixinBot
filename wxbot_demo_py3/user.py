@@ -5,6 +5,7 @@ import os
 import json
 import logging
 import pycurl
+from io import *
 
 from bs4 import BeautifulSoup
 from lxml import html
@@ -17,16 +18,28 @@ def _curlPost(api,method,params):
         # params = {"foo":"hello ", "bar":"world"};
         # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
         data = json.dumps({"jsonrpc": "2.0", "method": method,"params":params, "id": 1})
-
+        
+        body = BytesIO() #StringIO()
         curl = pycurl.Curl()
         curl.setopt(pycurl.URL, url)
+        curl.setopt(pycurl.WRITEFUNCTION, body.write)
         curl.setopt(pycurl.HTTPHEADER, ['Content-Type: application/json']);
         curl.setopt(pycurl.POST, 1)
         curl.setopt(pycurl.POSTFIELDS, data)
         curl.perform()
+        html = body.getvalue()
+        print(body)
+        print ("HTTP-code:", curl.getinfo(curl.HTTP_CODE))
+        body.close()
         curl.close()
-
-        return data;
+        temp = None
+        if html==None:
+            print('yes')
+        else:
+            print('no')
+            temp=html.decode()
+            print(temp)
+        return temp;
 
 def _userbind():
 
@@ -59,8 +72,9 @@ def _user_mlist():
 
     print ("JSON 对象：",json.dumps(userJson))
     # get_mlist
-    _curlPost("users","get_mlisturl",userJson)
-    return    
+    ret = _curlPost("users","get_mlisturl",userJson)
+    print (ret)
+    return  ret  
 
     # relogin_update
 def _relogin_update():
@@ -95,7 +109,7 @@ def _contact_update():
     return
 # contact_update
 def init():
-    _userbind()
+    _user_mlist()
     return
 
 init()
