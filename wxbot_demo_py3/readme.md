@@ -51,3 +51,28 @@ $ python3
 PycURL/7.43.0.1 libcurl/7.54.0 SecureTransport zlib/1.2.8
 
 ```
+
+一次登录，usename不变，每次重新登录后变化
+receive 
+
+FromUserName : contact.username,
+ToUserName : self.username
+
+send
+
+FromUserName : self.username,
+ToUserName : contact.username,
+
+username变化后，检查contact.username是否存在，不存在，
+检查nickname 则重新绑定。
+
+---------
+
+msg -> contact_id
+
+无论好友还是陌生人，同一微信号，fromusername一致。
+'FromUserName': '@f9ebd65bf2077cfff5f20ec76fab0eed', 'ToUserName': '@8ad283380cee1c79bfc71d4da16d2bb307ce0f18f503f0e808672bb2caf9ec52'
+
+
+'FromUserName': '@f9ebd65bf2077cfff5f20ec76fab0eed', 'ToUserName': '@8ad283380cee1c79bfc71d4da16d2bb307ce0f18f503f0e808672bb2caf9ec52',
+

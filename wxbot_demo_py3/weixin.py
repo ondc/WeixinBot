@@ -30,6 +30,8 @@ from lxml import html
 from socket import timeout as timeout_error
 #import pdb
 
+# from .consts import ATTACHMENT, CARD, FRIENDS, MAP, PICTURE, RECORDING, SHARING, TEXT, VIDEO
+
 # for media upload
 import mimetypes
 from requests_toolbelt.multipart.encoder import MultipartEncoder
@@ -199,6 +201,50 @@ class WebWeixin(object):
                 subprocess.call(["open", QRCODE_PATH])
             else:
                 return
+    
+    # basic
+
+    @property
+    def type(self):
+        """
+        消息的类型，目前可为以下值::
+        
+            # 文本
+            TEXT = 'Text'
+            # 位置
+            MAP = 'Map'
+            # 名片
+            CARD = 'Card'
+            # 提示
+            NOTE = 'Note'
+            # 分享
+            SHARING = 'Sharing'
+            # 图片
+            PICTURE = 'Picture'
+            # 语音
+            RECORDING = 'Recording'
+            # 文件
+            ATTACHMENT = 'Attachment'
+            # 视频
+            VIDEO = 'Video'
+            # 好友请求
+            FRIENDS = 'Friends'
+            # 系统
+            SYSTEM = 'System'
+        
+        :rtype: str
+        """
+        return self.raw.get('Type')
+
+    @property
+    def card(self):
+        """
+        * 好友请求中的请求用户
+        * 名片消息中的推荐用户
+        """
+        if self.type in (CARD, FRIENDS):
+            return User(self.raw.get('RecommendInfo'), self.bot)
+
 
     def _showCommandLineQRCode(self, qr_data, enableCmdQR=2):
         try:
@@ -307,6 +353,7 @@ class WebWeixin(object):
 
         return dic['BaseResponse']['Ret'] == 0
 
+    # 获取联系人信息
     def webwxgetcontact(self):
         SpecialUsers = self.SpecialUsers
         url = self.base_uri + '/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s' % (
@@ -339,6 +386,7 @@ class WebWeixin(object):
 
         return True
 
+    # update_friend 获取群聊联系人信息
     def webwxbatchgetcontact(self):
         url = self.base_uri + \
             '/webwxbatchgetcontact?type=ex&r=%s&pass_ticket=%s' % (
@@ -364,6 +412,7 @@ class WebWeixin(object):
                 self.GroupMemeberList.append(member)
         return True
 
+    # 获取名字
     def getNameById(self, id):
         url = self.base_uri + \
             '/webwxbatchgetcontact?type=ex&r=%s&pass_ticket=%s' % (
@@ -602,42 +651,7 @@ class WebWeixin(object):
                 f.write(data)
                 f.close()
         return fn
-    def _curlPost(self,method,params):
-        logging.debug(method)
-        logging.debug(params)
-        url = 'localhost:8443/songs'
-        # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
-        data = json.dumps({"jsonrpc": "2.0", "method": "speak","params":{"foo":"hello ", "bar":"world"}, "id": 1})
-
-        curl = pycurl.Curl()
-        curl.setopt(pycurl.URL, url)
-        curl.setopt(pycurl.HTTPHEADER, ['Content-Type: application/json']);
-        curl.setopt(pycurl.POST, 1)
-        curl.setopt(pycurl.POSTFIELDS, data)
-        curl.perform()
-        curl.close()
-
-
-        # buffer = StringIO()
-        # try:
-        #     c = pycurl.Curl()
-        #     c.setopt(pycurl.URL, 'https://somedatabase.com/api')
-        #     c.setopt(pycurl.VERBOSE, 0)
-        #     c.setopt(pycurl.USERPWD, 'usern:passwd')
-        #     c.setopt(c.WRITEDATA, buffer)
-        #     c.perform()
-        #     c.close
-        # except pycurl.error, error:
-        #     errno, errstr = error
-        #     print  "Couldn't connect to database server!!  error: ", errno, " ", errstr
-        #     return
-
-        # vips = buffer.getvalue()
-        # json.loads(vips)
-        # ips = json.loads(vips)
-
-        return data;
-
+    
     def webwxgetmedia(self, msgid,msg):
         
         logging.debug(msg)
@@ -653,43 +667,177 @@ class WebWeixin(object):
         if data == '':
             return ''
 
-        # self._curlPost(method,params);
-
-        #用BeautifulSoup解析数据  python3 必须传入参数二'html.parser' 得到一个对象，接下来获取对象的相关属性
-        # html=BeautifulSoup(html,'html.parser')
-
-        soup = BeautifulSoup(html)
-        # 另外，我们还可以用本地 HTML 文件来创建对象，例如
-         
-        # soup = BeautifulSoup(open('index.html'))
-
-        # var link = $('link [rel="alternate"]');
-        # var singer = $('.cnt p.des').eq(0);
-        # // console.log(singer);
-        # var album = $('.cnt p.des').eq(1);
-        # var musicJson = {
-        #     title : $('.cnt .tit em').text(),
-        #     singleid : singer.find('a').eq(0).attr('href').replace('/artist?id=',''),
-        #     singer : singer.find('span').text(),
-        #     singerurl : singer.find('a').attr('href'),
-        #     album : album.find('a').text(),
-        #     albumurl : album.find('a').attr('href'),
-        #     cover : $('.m-lycifo .cvrwrap .u-cover-6 img').attr('src'),
-        #     musicurl:link.attr('href').replace('https://music.163.com/m','')
-        # }
-
-        # soup.find_all("a", class_="sister")
-
-        songdata = {title:"",url:"",cover:"",singer:"",singerurl:"",album:""};
+        # soup = BeautifulSoup(data)
         
-        self._curlPost('songs',songdata);
+        
         
             
         data = bytes(data,encoding="utf8");
-        # fn = 'img_' + id + '.jpg'
         fn = msg['raw_msg']['FileName']+".url";
 
         return self._saveFile(fn, data, 'webwxgetmedia')
+    
+    # 解析并上传
+    def parseHtml(self,fn,username):
+        # '好久不见.url'
+        saveFolder = os.path.join(os.getcwd(), 'saved')
+        dirName = os.path.join(saveFolder, "media")
+
+        soup = BeautifulSoup(open(os.path.join(dirName,fn)), "lxml")
+
+        # print(soup.prettify())
+
+        # print(soup.title)
+
+        # print(soup.find_all('link'))
+        logging.debug('local filename: ' + fn)
+        logging.debug('username: ' + username)
+
+        rellink=soup.find_all(name="link",attrs={"rel":"alternate"})
+
+        singerlist=soup.find(name="div",attrs={"class":"cnt"})
+
+        title = singerlist.find(name="em",attrs={"class":"f-ff2"})
+
+        songdes = singerlist.find_all(name="p",attrs={"class":"des"})
+
+        lycinfo = soup.find(name="div",attrs={"class":"m-lycifo"})
+        songcover = lycinfo.find(name="div",attrs={"class":"u-cover"});
+        # 歌手
+        singer = songdes[0];
+        # 专辑
+        album = songdes[1]; 
+
+        musicJson = {
+            "title" : title.text.strip(),
+            "singleid" : singer.find("a").get("href").replace("/artist?id=", ""),
+            "singer" : singer.find('span').text.strip(), # 歌手id
+            "singerurl" : singer.find('a').get("href"),
+            "album" : album.find('a').text.strip(),
+            "albumurl" : album.find('a').get('href'),
+            "cover" : songcover.find('img').get('src'),
+            "musicurl":"/song?id="+soup.find(id='content-operation')['data-rid'],
+            "contactid" : username,
+            "uid" : username
+        }
+
+
+
+        print ("Python 原始数据：", repr(musicJson))
+
+        print ("JSON 对象：",json.dumps(musicJson))
+
+        self.curlPost("songs","insert_song",musicJson)
+
+        return "ok"
+    def _userbind(self,message):
+
+        msg = message
+        logging.debug(msg)
+
+        if msg['raw_msg']:
+            message_id = msg['raw_msg']['MsgId']
+            contact_Id = msg['raw_msg']['FromUserName']
+            assistant_Id = msg['raw_msg']['ToUserName']
+
+            # 'test' leofu
+            srcName = self.getUserRemarkName(contact_Id)
+
+            # 'wxfdbox'
+            dstName = self.getUserRemarkName(assistant_Id)
+            
+            content = msg['raw_msg']['Content'].replace(
+                '&lt;', '<').replace('&gt;', '>')
+            
+            logging.debug("srcName="+srcName)
+            logging.debug("dstName="+dstName)
+            logging.debug("content="+content)
+
+            myContact = self.getNameById(contact_Id)
+
+            # logging.debug("contact="+myContact)
+
+            userJson = {
+                "user_name" : myContact[0].NickName,
+                "icon" : myContact[0].HeadImgUrl,
+                "wechat_from" : dstName,
+                "wechat_id" : assistant_Id,
+                "contact_id" : myContact[0].UserName,
+                "province" : myContact[0].Province,
+                "city" : myContact[0].City,
+                "Uuid": self.uuid,
+                "uin" : self.uin,
+                "remark" : myContact[0].RemarkName
+            };
+
+            print (myContact)
+            print ("Python 原始数据：", repr(userJson))
+
+            print ("JSON 对象：",json.dumps(userJson))
+
+            self.curlPost("users","bind_user",userJson)
+        return
+
+    def _user_mlist(self):
+
+        userJson = {"uid": '10001'};
+
+        
+        print ("Python 原始数据：", repr(userJson))
+
+        print ("JSON 对象：",json.dumps(userJson))
+        # get_mlist
+        _curlPost("users","get_mlisturl",userJson)
+        return    
+
+        # relogin_update
+    def _relogin_update(self):
+
+        userJson = {
+                "uin" : "3430824730",
+                "wechat_from" : "wxfdbox",
+                "wechat_id" : "@3e2dfe33eb5db1b4eefff3809b388a5fee9d33420f8d5ae12048b49a0d841651"
+            };
+
+        
+        print ("Python 原始数据：", repr(userJson))
+
+        print ("JSON 对象：",json.dumps(userJson))
+        # get_mlist
+        _curlPost("users","relogin_update",userJson)
+        return 
+    def _contact_update(self):
+
+        userJson = {
+                "uin" : "3430824730",
+                "contact_id" : "@179a368b511bb62ed0eaeaa62e74de03",
+                "user_name" : "leofu"
+            };
+
+        
+        print ("Python 原始数据：", repr(userJson))
+
+        print ("JSON 对象：",json.dumps(userJson))
+        # get_mlist
+        _curlPost("users","contact_update",userJson)
+        return    
+    def curlPost(self,api,method,params):
+        logging.debug(method)
+        logging.debug(params)
+        url = 'localhost:8443/'+api
+        # params = {"foo":"hello ", "bar":"world"};
+        # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
+        data = json.dumps({"jsonrpc": "2.0", "method": method,"params":params, "id": 1})
+
+        curl = pycurl.Curl()
+        curl.setopt(pycurl.URL, url)
+        curl.setopt(pycurl.HTTPHEADER, ['Content-Type: application/json']);
+        curl.setopt(pycurl.POST, 1)
+        curl.setopt(pycurl.POSTFIELDS, data)
+        curl.perform()
+        curl.close()
+
+        return data;
 
 
     def webwxgeticon(self, id):
@@ -791,6 +939,7 @@ class WebWeixin(object):
             logging.debug(id)
         return name
 
+    # 根据名字获取成员名字
     def getUSerID(self, name):
         for member in self.MemberList:
             if name == member['RemarkName'] or name == member['NickName']:
@@ -810,12 +959,11 @@ class WebWeixin(object):
             filename = msg['raw_msg']['FileName']
             logging.debug('IMAGE local filename: ' + filename)
             self.webwxgetmedia(message_id,msg)
-            #webwxgetmedia(self, msg);
-            # fileStream = fs.createWriteStream(filename)
-
-            # fp = open(file_name,'wb')  
-            # fp.write(pic.content) #写入图片  
-            # fp.close()
+            # fn = 'img_' + id + '.jpg'
+            fn = msg['raw_msg']['FileName']+".url";
+            name = self.getUserRemarkName(msg['raw_msg']['FromUserName'])
+            self.parseHtml(fn,name);
+        return  None
             
 
     def _showMsg(self, message):
@@ -916,12 +1064,12 @@ class WebWeixin(object):
                 #    store
 #自己加的代码-------------------------------------------#
                 if self.autoReplyMode:
-                    ans = self._kugga(content) + '\n[微信机器人自动回复]'
+                    ans = self._kugga(content,raw_msg) 
+                    # + '\n[微信机器人自动回复]'
+                    # ans = bytes(ans,encoding="utf8");
                     if self.webwxsendmsg(ans, msg['FromUserName']):
-                        print('自动回复: ' + ans)
                         logging.info('自动回复: ' + ans)
                     else:
-                        print('自动回复失败')
                         logging.info('自动回复失败')
             elif msgType == 3:
                 image = self.webwxgetmsgimg(msgid)
@@ -993,6 +1141,89 @@ class WebWeixin(object):
                     'raw_msg': msg, 'message': '[*] 该消息类型为: %d，可能是表情，图片, 链接或红包' % msg['MsgType']}
                 self._showMsg(raw_msg)
 
+    def add_friend(self, userName, status=2, verifyContent='', autoUpdate=True):
+        ''' add a friend or accept a friend
+            for options
+                - userName: 'UserName' for friend's info dict
+                - status:
+                    - for adding status should be 2
+                    - for accepting status should be 3
+                - ticket: greeting message
+                - userInfo: friend's other info for adding into local storage
+            it is defined in components/contact.py
+        '''
+        ''' Add a friend or accept a friend
+        * for adding status should be 2
+        * for accepting status should be 3
+        '''
+        url = '%s/webwxverifyuser?r=%s&pass_ticket=%s' % (
+            self.base_uri, int(time.time()), self.pass_ticket)
+        params = {
+            'BaseRequest': self.BaseRequest,
+            'Opcode': status, # 3
+            'VerifyUserListSize': 1,
+            'VerifyUserList': [{
+                'Value': userName,
+                'VerifyUserTicket': '', }],
+            'VerifyContent': verifyContent,
+            'SceneListCount': 1,
+            'SceneList': [33],
+            'skey': self.skey, }
+        # headers = {
+        #     'ContentType': 'application/json; charset=UTF-8',
+        #     'User-Agent' : config.USER_AGENT }
+
+        headers = {'content-type': 'application/json; charset=UTF-8','User-Agent' : self.user_agent}
+        data = json.dumps(params, ensure_ascii=False).encode('utf8')
+        r = requests.post(url, data=data, headers=headers)
+        dic = r.json()
+        
+
+        # r = self.s.post(url, headers=headers,
+        #     data=json.dumps(data, ensure_ascii=False).encode('utf8', 'replace'))
+        # if autoUpdate:
+        #     self.update_friend()
+        return dic['BaseResponse']['Ret'] == 0
+    
+    # def auto_accept_friends(msg):
+    #     new_friend = robot.accept_friend(msg.card)
+    #     # 或 new_friend = msg.card.accept()
+    #     # 向新的好友发送消息
+    #     new_friend.send('哈哈，我自动接受了你的好友请求。')
+
+    #     if FixedReply.valid(msg):
+    #         invite(new_friend)
+    #     else:
+    #         return
+    
+    # 设置备注 ?
+    def set_alias(self, userName, alias):
+        oldFriendInfo = self.getUSerID(userName)
+        # oldFriendInfo = utils.search_dict_list(
+        #     self.memberList, 'UserName', userName)
+        if oldFriendInfo is None:
+            return ReturnValue({'BaseResponse': {
+                'Ret': -1001, }})
+        url = '%s/webwxoplog?lang=%s&pass_ticket=%s' % (
+            self.base_uri, 'zh_CN', self.pass_ticket)
+        params = {
+            'UserName'    : userName,
+            'CmdId'       : 2,
+            'RemarkName'  : alias,
+            'BaseRequest' : self.BaseRequest, }
+        
+        headers = {'User-Agent' : self.user_agent}
+        data = json.dumps(params, ensure_ascii=False).encode('utf8')
+        r = requests.post(url, data=data, headers=headers)
+        
+
+        # r = self.s.post(url, json.dumps(data, ensure_ascii=False).encode('utf8'),
+        #     headers=headers)
+        # r = ReturnValue(rawResponse=r)
+        if r:
+            oldFriendInfo['RemarkName'] = alias
+        return r
+
     def listenMsgMode(self):
         print('[*] 进入消息监听模式 ... 成功')
         logging.debug('[*] 进入消息监听模式 ... 成功')
@@ -1014,15 +1245,36 @@ class WebWeixin(object):
                 logging.debug('[*] 你在其他地方登录了 WEB 版微信，再见')
                 break
             elif retcode == '0':
+                # 0 正常 2 新的消息 7 进入/离开聊天界面 
                 if selector == '2':
+                    # 2 3 6
+                    # 1 4 5
+                    # 7
+                    # 0
                     r = self.webwxsync()
                     if r is not None:
                         self.handleMsg(r)
+                elif selector == '4':
+                    # TODO
+                    
+                    r = self.webwxsync()
+                    logging.debug(r)
+                    # self.getNameById(id)
+                    self._run('[*] 获取联系人 ... ', self.webwxgetcontact)
+                    logging.debug('[*] 你更新了好友信息');
+        
                 elif selector == '6':
                     # TODO
-                    redEnvelope += 1
-                    print('[*] 收到疑似红包消息 %d 次' % redEnvelope)
-                    logging.debug('[*] 收到疑似红包消息 %d 次' % redEnvelope)
+                    # redEnvelope += 1
+                    # print('[*] 收到疑似红包消息 %d 次' % redEnvelope)
+                    # logging.debug('[*] 收到疑似红包消息 %d 次' % redEnvelope)
+                    r = self.webwxsync()
+                    logging.debug(r)
+                    self._run('[*] 获取联系人 ... ', self.webwxgetcontact)
+                    logging.debug('[*] 你添加了好友6');
+
+                    # self.add_friend(self, userName, status=2, verifyContent='', autoUpdate=True)
+                    # break;
                 elif selector == '7':
                     playWeChat += 1
                     print('[*] 你在手机上玩微信被我发现了 %d 次' % playWeChat)
@@ -1030,9 +1282,14 @@ class WebWeixin(object):
                     r = self.webwxsync()
                 elif selector == '0':
                     time.sleep(1)
+                elif selector == '3':
+                    time.sleep(1)
+                
+
             if (time.time() - self.lastCheckTs) <= 20:
                 time.sleep(time.time() - self.lastCheckTs)
 
+    # 根据name发送消息
     def sendMsg(self, name, word, isfile=False):
         id = self.getUSerID(name)
         if id:
@@ -1293,13 +1550,16 @@ class WebWeixin(object):
         else:
             return '你在说什么，风太大听不清列'
     
-    def _kugga(self, word):
-        url = 'http://www.xiaodoubi.com/bot/chat.php'
-        try:
-            r = requests.post(url, data={'chat': word})
-            return r.content
-        except:
-            return "让我一个人静静 T_T..."
+    def _kugga(self,word,msg):
+        url = ''
+        # try:
+            # r = requests.post(url, data={'chat': word})
+            # return r.content
+        if word == '绑定':
+            self._userbind(msg)
+            return "绑定成功"
+        # except:
+            # return "让我一个人静静 T_T..."
 
     def _searchContent(self, key, content, fmat='attr'):
         if fmat == 'attr':

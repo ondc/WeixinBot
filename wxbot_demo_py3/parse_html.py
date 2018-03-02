@@ -10,10 +10,10 @@ from bs4 import BeautifulSoup
 from lxml import html
 
 
-def _curlPost(method,params):
+def _curlPost(api,method,params):
         logging.debug(method)
         logging.debug(params)
-        url = 'localhost:8443/songs'
+        url = 'localhost:8443/'+api
         # params = {"foo":"hello ", "bar":"world"};
         # data = json.dumps({"name": "fzc", "email": "fanzhengchen@gmail"})
         data = json.dumps({"jsonrpc": "2.0", "method": method,"params":params, "id": 1})
@@ -25,25 +25,6 @@ def _curlPost(method,params):
         curl.setopt(pycurl.POSTFIELDS, data)
         curl.perform()
         curl.close()
-
-
-        # buffer = StringIO()
-        # try:
-        #     c = pycurl.Curl()
-        #     c.setopt(pycurl.URL, 'https://somedatabase.com/api')
-        #     c.setopt(pycurl.VERBOSE, 0)
-        #     c.setopt(pycurl.USERPWD, 'usern:passwd')
-        #     c.setopt(c.WRITEDATA, buffer)
-        #     c.perform()
-        #     c.close
-        # except pycurl.error, error:
-        #     errno, errstr = error
-        #     print  "Couldn't connect to database server!!  error: ", errno, " ", errstr
-        #     return
-
-        # vips = buffer.getvalue()
-        # json.loads(vips)
-        # ips = json.loads(vips)
 
         return data;
 
@@ -85,7 +66,8 @@ def _parseHtml():
         "album" : album.find('a').text.strip(),
         "albumurl" : album.find('a').get('href'),
         "cover" : songcover.find('img').get('src'),
-        "musicurl":"/song?id="+soup.find(id='content-operation')['data-rid']
+        "musicurl":"/song?id="+soup.find(id='content-operation')['data-rid'],
+        "uid" : "10001"
     }
 
 
@@ -94,7 +76,7 @@ def _parseHtml():
 
     print ("JSON 对象：",json.dumps(musicJson))
 
-    _curlPost("speak",musicJson)
+    _curlPost("songs","insert_song",musicJson)
     return
 def init():
     _parseHtml()
