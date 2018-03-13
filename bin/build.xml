@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="kugga_box" default="clean" basedir="..">
+    <description>
+        TT Kugga Box Project
+    </description>
+    <target name="init" description="Initialize the target...">
+        <!-- initialize the parameter-->
+        <property environment="env" />
+        <property name="name" value="${ant.project.name}" />
+        <property name="version" value="0.0.1-SNAPSHOT" />
+        <echo message="Building ${ant.project.name} ${version} ${basedir}...." />
+        <property name="encoding" value="utf-8" />
+        <property name="deploy.dir" location="${basedir}/deploy" />
+        <property name="dist.dir" location="${basedir}/target" />
+    	<property name="install.name" value="${name}" />
+        <property name="install.dir" location="${deploy.dir}/${install.name}" />
+
+        <property name="code.target" value="${install.dir}" />
+        <property name="code.source" value="${install.dir}"/>
+        <property name="jar_yui" value="${basedir}/bin/jar/yuicompressor-2.4.7.jar"/>
+
+        <property name="cache.dir" location="${install.dir}/app/cache" />
+        <property name="log.dir" location="${install.dir}/logs" />
+        <property name="dist.tar.gz" value="${name}-${version}.tar.gz" />
+        <!--kugga_box-0.0.1-SNAPSHOT.tar.gz  0.0.1-SNAPSHOT.tar.gz -->
+        <tstamp>
+			<format property="date" pattern="yyyyMMddHH"/>
+		</tstamp>
+    </target>
+
+    <!--Prepare the build directory.-->
+    <target name="clean" depends="init">
+        <delete failonerror="false" verbose="true" includeemptydirs="true">
+            <fileset dir="${dist.dir}">
+                <include name="**" />
+            </fileset>
+        	<fileset dir="${install.dir}">
+                <include name="**" />
+            </fileset>
+        </delete>
+    </target>
+    
+    <!--注意打包时doc仅允许加入ReleaseNote.txt-->
+    <target name="install" depends="init,clean">
+        <echo message="billing install ......"/>
+        <copy todir="${install.dir}">
+            <fileset dir="${basedir}" excludes="*.svn">
+                <include name="app/**" />
+                <include name="assets/**" />
+                <include name="bin/**" />
+                <include name="cookie/**" />
+            	<include name="fake-keys/**" />
+                <include name="docs/**" />
+                <!-- <include name="doc/ReleaseNote.md" /> -->
+                <include name="app.js" />
+                <include name="log.js" />
+                <include name="package.json" />
+                <include name="README.md" />
+            	<!-- <include name=".htaccess" /> -->
+            </fileset>
+        </copy>
+        
+        <echo message="clean log and cache......"/>
+        <delete failonerror="false">
+            <fileset dir="${log.dir}">
+                <include name="**" />
+            </fileset>
+        	
+        </delete>
+    </target>
+    
+    <target name="package">
+        <echo message="packaging ${param_env}..."/>
+    	<!-- 修改环境变量 -->
+    	<echo message="update ENVIRONMENT to ${param_env}..."/>
+    	<!-- <replaceregexp byline="true"> <regexp pattern=", 'development'"/>
+    	    <substitution expression=", '${param_env}'"/>
+    	    <fileset dir="${install.dir}" includes="index.php"/>
+    	</replaceregexp>
+
+    	<replaceregexp byline="true"> <regexp pattern="VERSION"/>
+            <substitution expression="${date}"/>
+            <fileset dir="${install.dir}/libs/css" includes="fonts.css"/>
+        </replaceregexp>
+
+        <replaceregexp byline="true"> <regexp pattern=", 'devdateext'"/>
+            <substitution expression=", '${date}'"/>
+            <fileset dir="${install.dir}" includes="index.php"/>
+        </replaceregexp> -->
+        
+    	<echo message="tar ${name}_${version}_${date}_${param_env}.tar.gz..."/>
+    	<tar destfile="${dist.dir}/${dist.tar.gz}" compression="gzip"><!-- ${name}_${version}_${date}_${param_env}.tar.gz-->
+            <tarfileset dir="${deploy.dir}">
+                <include name="${install.name}/**" />
+            </tarfileset>
+        </tar>
+    </target>
+    
+    <target name="test" depends="install" description="publish test tgz package.">
+        <antcall target="package">
+            <param name="param_env" value="testing"/>
+        </antcall>
+    </target>
+    
+    
+    <target name="prod" depends="install" description="publish production tgz package.">
+        <antcall target="package">
+            <param name="param_env" value="production"/>
+        </antcall>
+    </target>
+    
+    <!---->
+	<target name="dev" depends="install" description="publish development production tgz package.">
+	        <antcall target="package">
+	            <param name="param_env" value="development"/>
+	        </antcall>
+	</target>
+
+	
+    
+    
+    
+</project>

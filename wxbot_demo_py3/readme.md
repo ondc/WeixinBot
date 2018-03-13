@@ -20,6 +20,9 @@ pip3 install qrcode-terminal
 
 pip3 install beautifulsoup4
 
+pip3 install jprops
+
+
 基础入门_Python-模块和包.运维开发中watchdog事件监视的最佳实践
 
 用于安装check.py的依赖
@@ -38,7 +41,24 @@ pycurl
 wget https://dl.bintray.com/pycurl/pycurl/pycurl-7.43.0.1.tar.gz
 
 python3 setup.py install
+或
+python3 setup.py install --curl-config=/usr/local/bin/curl-config
 
+
+发现错误
+
+FileNotFoundError: [Errno 2] No such file or directory: 'curl-config': 'curl-config'
+
+然后安装curl
+centos curl
+
+wget http://curl.haxx.se/download/curl-7.24.0.tar.gz
+tar -zxvf curl-7.24.0.tar.gz
+cd curl-7.24.0
+./configure
+make && make install
+
+tar -zxvf pycurl-7.19.0.tar.gz
 
 test
 ```
